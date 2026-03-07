@@ -7,7 +7,13 @@
   }
 
   if (globalThis.caught) {
-    $done({ status: 'reject' });
+    $done({
+      response: {
+        status: 403,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'blocked'
+      }
+    });
     return;
   }
   globalThis.caught = true;
@@ -17,25 +23,31 @@
 
   if (!code) {
     $notification.post('获取失败', '', '未拿到 code');
-    $done({ status: 'reject' });
+    $done({
+      response: {
+        status: 403,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'blocked'
+      }
+    });
     return;
   }
 
   const platformMatch = url.match(/platform=([^&]+)/);
   const platform = platformMatch ? platformMatch[1] : '';
 
-  let name, suffix;
-  if (platform === 'qq') {
-    name = 'qq-bot';
-    suffix = '';
-  } else {
-    name = 'wx-bot';
-    suffix = ' --wx';
-  }
+  let name = platform === 'qq' ? 'qq-bot' : 'wx-bot';
 
-  const cmd = `${code}`;
+  $persistentStore.write(code, 'qqfarm_code');
+  console.log(`CODE: ${code}`);
+  $notification.post('已获取 CODE', `平台: ${name}`, code);
 
-  $notification.post('已获取 CODE', `平台: ${name}`, cmd);
-
-  $done({ status: 'reject' });
+  // 返回伪造响应，彻底拦截
+  $done({
+    response: {
+      status: 403,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'blocked'
+    }
+  });
 })();
