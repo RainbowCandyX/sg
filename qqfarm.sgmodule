@@ -3,7 +3,7 @@
 #!category=Tools
 
 [Script]
-获取Code = type=http-request, pattern=^https?://gate-obt\.nqf\.qq\.com/prod/ws, script-path=https://raw.githubusercontent.com/RainbowCandyX/sg/refs/heads/main/qqfarm.js, requires-body=0
+获取Code = type=http-request, pattern=^https?://gate-obt\.nqf\.qq\.com, script-path=https://raw.githubusercontent.com/RainbowCandyX/sg/refs/heads/main/qqfarm.js, requires-body=0
 
 [MITM]
 hostname = %APPEND% gate-obt.nqf.qq.com
