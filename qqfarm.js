@@ -7,13 +7,7 @@
   }
 
   if (globalThis.caught) {
-    $done({
-      response: {
-        status: 403,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'blocked'
-      }
-    });
+    $done({ status: 'reject' });
     return;
   }
   globalThis.caught = true;
@@ -23,31 +17,19 @@
 
   if (!code) {
     $notification.post('获取失败', '', '未拿到 code');
-    $done({
-      response: {
-        status: 403,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'blocked'
-      }
-    });
+    $done({ status: 'reject' });
     return;
   }
 
   const platformMatch = url.match(/platform=([^&]+)/);
   const platform = platformMatch ? platformMatch[1] : '';
 
-  let name = platform === 'qq' ? 'qq-bot' : 'wx-bot';
+  let name = platform === 'qq' ? 'QQ' : 'WX';
 
-  $persistentStore.write(code, 'qqfarm_code');
-  console.log(`CODE: ${code}`);
   $notification.post('已获取 CODE', `平台: ${name}`, code);
 
-  // 返回伪造响应，彻底拦截
-  $done({
-    response: {
-      status: 403,
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'blocked'
-    }
-  });
+  const encoded = encodeURIComponent(code);
+  $open(`shortcuts://run-shortcut?name=${encodeURIComponent('复制文本')}&input=text&text=${encoded}`);
+
+  $done({ status: 'reject' });
 })();
